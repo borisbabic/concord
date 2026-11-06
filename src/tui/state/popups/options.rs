@@ -26,10 +26,12 @@ enum DisplayOption {
     MediaPlayback,
     HourFormat24,
     AnimatePreviews,
+    HideBlockedMessages,
+    HideIgnoredMessages,
 }
 
 impl DisplayOption {
-    const ALL: [Self; 10] = [
+    const ALL: [Self; 12] = [
         Self::DisableImagePreview,
         Self::ShowAvatars,
         Self::ShowImages,
@@ -40,6 +42,8 @@ impl DisplayOption {
         Self::MediaPlayback,
         Self::HourFormat24,
         Self::AnimatePreviews,
+        Self::HideBlockedMessages,
+        Self::HideIgnoredMessages,
     ];
 
     fn at(index: usize) -> Option<Self> {
@@ -335,6 +339,22 @@ impl DashboardState {
                     && options.animate_previews != AnimatePreviews::Never,
                 description: "Animated GIF and WebP previews: always, selected message only, or never.",
             },
+            DisplayOption::HideBlockedMessages => DisplayOptionItem {
+                label: "Hide blocked users' messages",
+                enabled: options.hide_blocked_messages,
+                value: None,
+                gauge: None,
+                effective: options.hide_blocked_messages,
+                description: "Remove messages from blocked accounts from the message pane.",
+            },
+            DisplayOption::HideIgnoredMessages => DisplayOptionItem {
+                label: "Hide ignored users' messages",
+                enabled: options.hide_ignored_messages,
+                value: None,
+                gauge: None,
+                effective: options.hide_ignored_messages,
+                description: "Remove messages from ignored accounts from the message pane.",
+            },
         }
     }
 
@@ -516,7 +536,14 @@ impl DashboardState {
                 let Some(option) = DisplayOption::at(selected) else {
                     return;
                 };
+                let previous_selected = self.selected_message_state().map(|message| message.id);
                 self.toggle_display_option(option);
+                if matches!(
+                    option,
+                    DisplayOption::HideBlockedMessages | DisplayOption::HideIgnoredMessages
+                ) {
+                    self.reapply_message_filter(previous_selected);
+                }
             }
             OptionsCategory::Composer if selected == 0 => {
                 self.options.composer_options.emojis_as_links =
@@ -556,6 +583,12 @@ impl DashboardState {
             DisplayOption::HourFormat24 => options.hour_format_24 = !options.hour_format_24,
             DisplayOption::AnimatePreviews => {
                 options.animate_previews = options.animate_previews.next()
+            }
+            DisplayOption::HideBlockedMessages => {
+                options.hide_blocked_messages = !options.hide_blocked_messages
+            }
+            DisplayOption::HideIgnoredMessages => {
+                options.hide_ignored_messages = !options.hide_ignored_messages
             }
         }
     }

@@ -28,6 +28,8 @@ pub struct DisplayOptions {
     pub show_custom_emoji: bool,
     pub circular_avatars: bool,
     pub hour_format_24: bool,
+    pub hide_blocked_messages: bool,
+    pub hide_ignored_messages: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -805,6 +807,8 @@ impl Default for DisplayOptions {
             show_custom_emoji: true,
             circular_avatars: false,
             hour_format_24: true,
+            hide_blocked_messages: false,
+            hide_ignored_messages: false,
         }
     }
 }

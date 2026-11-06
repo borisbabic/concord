@@ -24,6 +24,8 @@ fn display_options_default_to_all_media_enabled() {
     assert!(!options.media_playback_enabled());
     assert!(options.custom_emoji_visible());
     assert!(options.hour_format_24);
+    assert!(!options.hide_blocked_messages);
+    assert!(!options.hide_ignored_messages);
     assert_eq!(
         options.image_preview_quality,
         ImagePreviewQualityPreset::Balanced
@@ -46,6 +48,8 @@ fn global_disable_overrides_individual_toggles() {
         show_custom_emoji: true,
         circular_avatars: false,
         hour_format_24: true,
+        hide_blocked_messages: false,
+        hide_ignored_messages: false,
     };
 
     assert!(!options.avatars_visible());
@@ -685,6 +689,8 @@ fn options_save_and_load_round_trip() {
             show_custom_emoji: false,
             circular_avatars: true,
             hour_format_24: false,
+            hide_blocked_messages: true,
+            hide_ignored_messages: true,
         },
         composer: ComposerOptions {
             emojis_as_links: true,

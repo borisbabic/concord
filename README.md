@@ -433,6 +433,12 @@ circular_avatars = false
 # Show message times in 24-hour format (14:30) instead of 12-hour (02:30 PM).
 hour_format_24 = true
 
+# Hide messages from accounts you have blocked (shown by default).
+hide_blocked_messages = false
+
+# Hide messages from accounts you have ignored (shown by default).
+hide_ignored_messages = false
+
 [composer]
 # Send custom emoji your account cannot use directly as image links.
 emojis_as_links = false

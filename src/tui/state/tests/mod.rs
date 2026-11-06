@@ -51,6 +51,7 @@ mod composer;
 mod direct_messages;
 mod emoji_reactions;
 mod fixtures;
+mod hidden_authors;
 mod leader_actions;
 mod members;
 mod message_actions;

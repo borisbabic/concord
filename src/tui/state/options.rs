@@ -350,6 +350,14 @@ impl DashboardState {
         self.options.display_options.attachment_viewer_quality
     }
 
+    /// Whether a message from `author_id` is hidden by the blocked/ignored
+    /// display options.
+    pub(in crate::tui) fn is_message_author_hidden(&self, author_id: Id<UserMarker>) -> bool {
+        let options = self.options.display_options;
+        (options.hide_blocked_messages && self.discord.cache.is_user_blocked(author_id))
+            || (options.hide_ignored_messages && self.discord.cache.is_user_ignored(author_id))
+    }
+
     pub fn show_custom_emoji(&self) -> bool {
         self.options.display_options.custom_emoji_visible()
     }

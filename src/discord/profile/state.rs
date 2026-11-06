@@ -5,7 +5,7 @@ use crate::discord::ids::{
     marker::{GuildMarker, RoleMarker, UserMarker},
 };
 use crate::discord::member::role_display_order;
-use crate::discord::{RoleState, UserProfileInfo};
+use crate::discord::{FriendStatus, RoleState, UserProfileInfo};
 
 use crate::discord::state::DiscordState;
 use crate::discord::state::{
@@ -43,6 +43,23 @@ impl DiscordState {
 
     pub fn is_note_fetched(&self, user_id: Id<UserMarker>) -> bool {
         self.profiles.fetched_notes.contains_key(&user_id)
+    }
+
+    /// Whether the current account has blocked `user_id`.
+    pub fn is_user_blocked(&self, user_id: Id<UserMarker>) -> bool {
+        self.profiles
+            .relationships
+            .get(&user_id)
+            .is_some_and(|relationship| relationship.status == FriendStatus::Blocked)
+    }
+
+    /// Whether the current account has ignored `user_id`. Ignoring is
+    /// independent of the relationship type.
+    pub fn is_user_ignored(&self, user_id: Id<UserMarker>) -> bool {
+        self.profiles
+            .relationships
+            .get(&user_id)
+            .is_some_and(|relationship| relationship.ignored)
     }
 
     pub fn current_user_id(&self) -> Option<Id<UserMarker>> {

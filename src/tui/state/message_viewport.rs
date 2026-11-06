@@ -1585,6 +1585,15 @@ impl DashboardState {
     }
 
     pub fn messages(&self) -> Vec<&MessageState> {
+        let mut messages = self.unfiltered_messages();
+        let options = self.options.display_options;
+        if options.hide_blocked_messages || options.hide_ignored_messages {
+            messages.retain(|message| !self.is_message_author_hidden(message.author_id));
+        }
+        messages
+    }
+
+    fn unfiltered_messages(&self) -> Vec<&MessageState> {
         match self.message_pane_source() {
             Some(MessagePaneSource::ChannelMessages { channel_id }) => {
                 let mut messages = self.discord.cache.messages_for_channel(channel_id);
@@ -1789,6 +1798,21 @@ impl DashboardState {
             return;
         }
         self.select_message_by_id(message_id);
+    }
+
+    /// Re-applies the message pane filter after a change that alters which
+    /// messages are visible, keeping the previously selected message selected
+    /// when it is still shown.
+    pub(super) fn reapply_message_filter(&mut self, previous_selected: Option<Id<MessageMarker>>) {
+        if let Some(index) = previous_selected.and_then(|message_id| {
+            self.messages()
+                .iter()
+                .position(|message| message.id == message_id)
+        }) {
+            self.messages.selected_message = index;
+            self.messages.message_keep_selection_visible = true;
+        }
+        self.clamp_message_viewport();
     }
 
     fn select_message_by_id(&mut self, message_id: Id<MessageMarker>) -> bool {
